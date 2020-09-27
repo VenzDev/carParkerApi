@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+
+    $user_id = $request->user()->id;
+    $user_reservations =User::findOrFail($user_id)->with('reservations')->get()->first();
+
+
+    return response()->json($user_reservations);
 });
 
 Route::get('/status',function(){
@@ -23,3 +29,11 @@ Route::get('/status',function(){
 });
 
 Route::post('/register','App\Http\Controllers\RegisterController@register');
+
+Route::post('/login','App\Http\Controllers\LoginController@login');
+
+Route::post('/logout','App\Http\Controllers\LoginController@logout');
+
+Route::post('/checkParking','App\Http\Controllers\CheckParkingController@checkParking');
+
+Route::post('/reserveSlot','App\Http\Controllers\CheckParkingController@reserveSlot');
