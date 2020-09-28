@@ -15,7 +15,7 @@ use App\Models\User;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::get('/user', function (Request $request) {
 
     $user_id = $request->user()->id;
     $user_reservations =User::findOrFail($user_id)->with('reservations')->get()->first();
