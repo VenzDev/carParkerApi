@@ -37,3 +37,7 @@ Route::post('/logout','App\Http\Controllers\LoginController@logout');
 Route::post('/checkParking','App\Http\Controllers\CheckParkingController@checkParking');
 
 Route::post('/reserveSlot','App\Http\Controllers\CheckParkingController@reserveSlot');
+
+Route::get('/raspberry',function(){
+    return response()->json(['status'=>'hello from raspberry']);
+});
