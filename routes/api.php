@@ -79,6 +79,7 @@ Route::post('/raspberry',function(Request $request){
     if($active_reservation)
     {
         $active_reservation->status = 'CAR ON PARKING';
+        $active_reservation->save();
         return response()->json(['status'=>'Reservation confirmed']);
     }
 
@@ -91,6 +92,7 @@ Route::post('/raspberry',function(Request $request){
     if($end_reservation)
     {
         $end_reservation->status = 'ARCHIVED';
+        $end_reservation->save();
         return response()->json(['status'=>'Reservation ended']);
     }
 
