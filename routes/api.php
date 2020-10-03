@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
     $user_id = $request->user()->id;
     $user =User::with(['reservations'=>function($query){
-        $query->where('status','=','RESERVED');
+        $query->whereIn('status',['RESERVED','CAR ON PARKING']);
     }])->where('id',$user_id)->get()->first();
 
     
@@ -48,7 +48,7 @@ Route::middleware('auth:sanctum')->get('/active_reservations',function(Request $
     $user_id = $request->user()->id;
     Log::info($user_id);
     $active_reservations = Reservation::all()
-    ->where('status','RESERVED')
+    ->whereIn('status',['RESERVED','CAR ON PARKING'])
     ->where('user_id',$user_id)
     ->toArray();
 
