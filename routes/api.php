@@ -73,7 +73,7 @@ Route::post('/raspberry',function(Request $request){
     $active_reservation = Reservation::all()
     ->where('user_id',$user->id)
     ->where('status','RESERVED')
-    ->where('reservation_to','<',$now)
+    ->where('reservation_to','>=',$now)
     ->first();
 
     if($active_reservation)
@@ -85,7 +85,7 @@ Route::post('/raspberry',function(Request $request){
     $end_reservation = Reservation::all()
     ->where('user_id',$user->id)
     ->where('status','CAR ON PARKING')
-    ->where('system_reservation_to','<',$now)
+    ->where('system_reservation_to','>=',$now)
     ->first();
 
     if($end_reservation)
