@@ -155,7 +155,7 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN','.carparker.tk'),
+    'domain' => env('SESSION_DOMAIN',null),
 
     /*
     |--------------------------------------------------------------------------
