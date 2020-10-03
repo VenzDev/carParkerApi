@@ -1,8 +1,11 @@
 <?php
 
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,10 +21,11 @@ use App\Models\User;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
     $user_id = $request->user()->id;
-    $user_reservations =User::findOrFail($user_id)->with('reservations')->get()->first();
+    $user =User::findOrFail($user_id)->with(['reservations'=>function($query){
+        $query->where('status','=','RESERVED');
+    }])->get()->first();
 
-
-    return response()->json($user_reservations);
+    return response()->json($user);
 });
 
 Route::get('/status',function(){
@@ -36,8 +40,57 @@ Route::post('/logout','App\Http\Controllers\LoginController@logout');
 
 Route::post('/checkParking','App\Http\Controllers\CheckParkingController@checkParking');
 
+Route::middleware('auth:sanctum')->get('/active_reservations',function(Request $request){
+    $user_id = $request->user()->id;
+    Log::info($user_id);
+    $active_reservations = Reservation::all()
+    ->where('status','RESERVED')
+    ->where('user_id',$user_id)
+    ->toArray();
+
+    $array= array_merge($active_reservations);
+
+    return response()->json($array);
+});
+
 Route::post('/reserveSlot','App\Http\Controllers\CheckParkingController@reserveSlot');
 
-Route::get('/raspberry',function(){
-    return response()->json(['status'=>'hello from raspberry']);
+Route::post('/raspberry',function(Request $request){
+    $rfid = $request['rfid'];
+    $user = User::all()->where('rfid_card_id',$rfid)->first();
+
+    if(!$user)
+    {
+        return response()->json(['status'=>'RFID not found']);
+    }
+
+    $now = Carbon::now();
+
+    $active_reservation = Reservation::all()
+    ->where('user_id',$user->id)
+    ->where('status','RESERVED')
+    ->where('reservation_to','<',$now)
+    ->first();
+
+    if($active_reservation)
+    {
+        $active_reservation->status = 'CAR ON PARKING';
+        return response()->json(['status'=>'Reservation confirmed']);
+    }
+
+    $end_reservation = Reservation::all()
+    ->where('user_id',$user->id)
+    ->where('status','CAR ON PARKING')
+    ->where('system_reservation_to','<',$now)
+    ->first();
+
+    if($end_reservation)
+    {
+        $end_reservation->status = 'ARCHIVED';
+        return response()->json(['status'=>'Reservation ended']);
+    }
+
+    return response()->json(['status'=>'Reservation not found']);
+
+
 });
