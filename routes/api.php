@@ -25,10 +25,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         $query->whereIn('status',['RESERVED','CAR ON PARKING']);
     }])->where('id',$user_id)->get()->first();
 
+    $cars_on_parking = Reservation::query()->where('status','CAR ON PARKING')->get()->count();
+    $user->setAttribute('cars_on_parking',$cars_on_parking);
     
-
-    Log::info($user);
-
     return response()->json($user);
 });
 
@@ -46,11 +45,11 @@ Route::post('/checkParking','App\Http\Controllers\CheckParkingController@checkPa
 
 Route::middleware('auth:sanctum')->get('/active_reservations',function(Request $request){
     $user_id = $request->user()->id;
-    Log::info($user_id);
     $active_reservations = Reservation::all()
     ->whereIn('status',['RESERVED','CAR ON PARKING'])
     ->where('user_id',$user_id)
     ->toArray();
+
 
     $array= array_merge($active_reservations);
 
@@ -58,7 +57,8 @@ Route::middleware('auth:sanctum')->get('/active_reservations',function(Request $
 });
 
 Route::post('/reserveSlot','App\Http\Controllers\CheckParkingController@reserveSlot');
-
+Route::get('/carsOnParking','App\Http\Controllers\CheckParkingController@carsOnParking');
+Route::post("/availableReservations", 'App\Http\Controllers\CheckParkingController@availableReservations');
 Route::post('/raspberry',function(Request $request){
     $rfid = $request['rfid'];
     $user = User::all()->where('rfid_card_id',$rfid)->first();

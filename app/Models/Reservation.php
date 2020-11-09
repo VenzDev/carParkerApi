@@ -14,6 +14,9 @@ class Reservation extends Model
     protected $fillable = ['parking_slot_id,reservation_from,reservation_to,status,user_id'];
 
     protected $appends = ['to_open','to_close','to_system_close'];
+    /**
+     * @var mixed
+     */
 
     public function user()
     {
@@ -33,7 +36,7 @@ class Reservation extends Model
         {
             return null;
         }
-        else 
+        else
         {
             if($diff>=$one_day_seconds)
             {
@@ -49,7 +52,7 @@ class Reservation extends Model
     public function getToCloseAttribute()
     {
         $today = Carbon::now();
-        
+
         $system_to = Carbon::parse($this->attributes['reservation_to']);
 
         $diff = $system_to->diffInSeconds($today);
@@ -58,16 +61,16 @@ class Reservation extends Model
         {
             return null;
         }
-        else 
+        else
         {
             return gmdate('H:i:s',$diff);
         }
     }
-    
+
     public function getToSystemCloseAttribute()
     {
         $today = Carbon::now();
-        
+
         $system_to = Carbon::parse($this->attributes['system_reservation_to']);
 
         $diff = $system_to->diffInSeconds($today);
@@ -76,7 +79,7 @@ class Reservation extends Model
         {
             return null;
         }
-        else 
+        else
         {
             return gmdate('H:i:s',$diff);
         }
