@@ -1,11 +1,6 @@
 <?php
 
-use App\Models\Reservation;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,96 +12,24 @@ use Illuminate\Support\Facades\Log;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-
-    $user_id = $request->user()->id;
-    $user =User::with(['reservations'=>function($query){
-        $query->whereIn('status',['RESERVED','CAR ON PARKING']);
-    }])->where('id',$user_id)->get()->first();
-
-    $cars_on_parking = Reservation::query()->where('status','CAR ON PARKING')->get()->count();
-    $user->setAttribute('cars_on_parking',$cars_on_parking);
-    
-    return response()->json($user);
-});
-
-Route::get('/status',function(){
+Route::get('/status',function()
+{
     return response()->json(['status'=>'ok','message'=>'hello world from carparker api (laravel)']);
 });
+
+Route::middleware('auth:sanctum')->get('/user','App\Http\Controllers\UserController@user');
+Route::middleware('auth:sanctum')->get('/active_reservations','App\Http\Controllers\UserController@activeReservations');
 
 Route::post('/register','App\Http\Controllers\RegisterController@register');
 
 Route::post('/login','App\Http\Controllers\LoginController@login');
 
-Route::post('/logout','App\Http\Controllers\LoginController@logout');
+Route::middleware('auth:sanctum')->post('/logout','App\Http\Controllers\LoginController@logout');
 
-Route::post('/checkParking','App\Http\Controllers\CheckParkingController@checkParking');
+Route::middleware('auth:sanctum')->post('/checkParking','App\Http\Controllers\CheckParkingController@checkParking');
+Route::middleware('auth:sanctum')->post('/reserveSlot','App\Http\Controllers\CheckParkingController@reserveSlot');
+Route::middleware('auth:sanctum')->get('/carsOnParking','App\Http\Controllers\CheckParkingController@carsOnParking');
+Route::middleware('auth:sanctum')->post("/availableReservations", 'App\Http\Controllers\CheckParkingController@availableReservations');
+Route::middleware('auth:sanctum')->post("/cancelReservation",'App\Http\Controllers\CheckParkingController@cancelReservation');
 
-Route::middleware('auth:sanctum')->get('/active_reservations',function(Request $request){
-    $user_id = $request->user()->id;
-    $active_reservations = Reservation::all()
-    ->whereIn('status',['RESERVED','CAR ON PARKING'])
-    ->where('user_id',$user_id)
-    ->toArray();
-
-
-    $array= array_merge($active_reservations);
-
-    return response()->json($array);
-});
-
-Route::post('/reserveSlot','App\Http\Controllers\CheckParkingController@reserveSlot');
-Route::get('/carsOnParking','App\Http\Controllers\CheckParkingController@carsOnParking');
-Route::post("/availableReservations", 'App\Http\Controllers\CheckParkingController@availableReservations');
-Route::post('/raspberry',function(Request $request){
-    $rfid = $request['rfid'];
-    $user = User::all()->where('rfid_card_id',$rfid)->first();
-
-    if(!$user)
-    {
-        return response()->json(['status'=>'RFID not found']);
-    }
-
-    $now = Carbon::now();
-
-    $active_reservation = Reservation::all()
-    ->where('user_id',$user->id)
-    ->where('status','RESERVED')
-    ->filter(function($item) use(&$now) {
-        if($now->between($item->system_reservation_from,$item->reservation_to))
-        {
-            return $item;
-        }
-      })
-    ->first();
-
-    if($active_reservation)
-    {
-        $active_reservation->status = 'CAR ON PARKING';
-        $active_reservation->save();
-        return response()->json(['status'=>'Reservation confirmed']);
-    }
-
-    $end_reservation = Reservation::all()
-    ->where('user_id',$user->id)
-    ->where('status','CAR ON PARKING')
-    ->filter(function($item) use(&$now) {
-        if($now->between($item->system_reservation_from,$item->system_reservation_to))
-        {
-            return $item;
-        }
-      })
-    ->first();
-
-    if($end_reservation)
-    {
-        $end_reservation->status = 'ARCHIVED';
-        $end_reservation->save();
-        return response()->json(['status'=>'Reservation ended']);
-    }
-
-    return response()->json(['status'=>'Reservation not found']);
-
-
-});
+Route::post('/raspberry','App\Http\Controllers\RaspberryController@raspberry');

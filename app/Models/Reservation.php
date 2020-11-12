@@ -13,7 +13,7 @@ class Reservation extends Model
 
     protected $fillable = ['parking_slot_id,reservation_from,reservation_to,status,user_id'];
 
-    protected $appends = ['to_open','to_close','to_system_close'];
+    protected $appends = ['to_open','to_close','to_system_close','can_cancel'];
     /**
      * @var mixed
      */
@@ -83,6 +83,22 @@ class Reservation extends Model
         {
             return gmdate('H:i:s',$diff);
         }
+    }
+
+    public function getCanCancelAttribute()
+    {
+        $today = Carbon::now();
+
+        $system_to = Carbon::parse($this->attributes['system_reservation_to']);
+
+        $diff = $system_to->diffInMinutes($today);
+        Log::info("diff ----------------- diff");
+        Log::info($diff);
+        if($diff < 240)
+        {
+            return false;
+        }
+        return true;
     }
 
 }

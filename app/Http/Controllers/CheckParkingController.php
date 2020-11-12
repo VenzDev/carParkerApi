@@ -156,6 +156,19 @@ class CheckParkingController extends Controller
         return response()->json($carsOnParking);
     }
 
+    public function cancelReservation(Request $request)
+    {
+        $reservation_id = $request['reservation_id'];
+
+        $reservation = Reservation::query()->where('id',$reservation_id)->first();
+        if($reservation && $reservation->can_cancel)
+        {
+            $reservation->delete();
+            return response()->json(['status' => 'success']);
+        }
+        return response()->setStatusCode(400);
+    }
+
     private function mergeAvailableReservation($array)
     {
         $new_array = [];
@@ -174,7 +187,7 @@ class CheckParkingController extends Controller
         {
             if($array[0][1] === $array[1][0])
             {
-                array_push($new_array, [$array[0][1], $array[1][0]]);
+                array_push($new_array, [$array[0][0], $array[1][1]]);
                 return $new_array;
             }
             else
