@@ -6,6 +6,7 @@ use App\Mail\NotificationMail;
 use App\Models\Reservation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -80,6 +81,9 @@ class CheckParkingController extends Controller
 
     public function reserveSlot(Request $request)
     {
+
+        $today = Carbon::now()->tz('Europe/Warsaw');
+
         $user_email = $request->user()->email;
         $system_from = Carbon::parse($request['from']);
         $system_to = Carbon::parse($request['to']);
@@ -110,8 +114,14 @@ class CheckParkingController extends Controller
         }
 
         $system_to->addMinutes(5);
-
+        
         $slot = new Reservation();
+        if($system_from->diffInMinutes($today) < 60){
+            $slot->notify_sent = true;
+        } else {
+            $slot->notify_sent = false;
+        }
+
         $slot->user_id = $request['user_id'];
         $slot->reservation_from = $request['from'];
         $slot->system_reservation_from = $system_from;

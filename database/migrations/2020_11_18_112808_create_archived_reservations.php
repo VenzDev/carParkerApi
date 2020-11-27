@@ -17,6 +17,7 @@ class CreateArchivedReservations extends Migration
             $table->id();
             $table->timestamps();
             $table->string('parking_slot_id',20);
+            $table->boolean('notify_sent')->default(true);
             $table->dateTime('reservation_from');
             $table->dateTime('reservation_to');
             $table->dateTime('system_reservation_from');

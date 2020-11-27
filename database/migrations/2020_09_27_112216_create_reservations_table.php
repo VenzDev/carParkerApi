@@ -16,6 +16,7 @@ class CreateReservationsTable extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->boolean('notify_sent')->default(true);
             $table->integer('parking_slot_id');
             $table->dateTime('reservation_from');
             $table->dateTime('reservation_to');
