@@ -1,5 +1,7 @@
 <?php
 
+use App\Mail\TestMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,5 +33,13 @@ Route::middleware('auth:sanctum')->post('/reserveSlot','App\Http\Controllers\Che
 Route::middleware('auth:sanctum')->get('/carsOnParking','App\Http\Controllers\CheckParkingController@carsOnParking');
 Route::middleware('auth:sanctum')->post("/availableReservations", 'App\Http\Controllers\CheckParkingController@availableReservations');
 Route::middleware('auth:sanctum')->post("/cancelReservation",'App\Http\Controllers\CheckParkingController@cancelReservation');
+Route::middleware('auth:sanctum')->post("/percentageStatus",'App\Http\Controllers\CheckParkingController@percentageStatus');
+Route::middleware('auth:sanctum')->post('/activeAccount','App\Http\UserController@activeAccount');
+Route::middleware('auth:sanctum')->post('/createTicket','App\Http\Controllers\TicketController@createTicket');
+Route::middleware('auth:sanctum')->get('/getTickets','App\Http\Controllers\TicketController@getTickets');
+Route::middleware('auth:sanctum')->get('/getUserTicket','App\Http\Controllers\TicketController@getUserTicket');
+Route::middleware('auth:sanctum')->post('/addTicketMessage','App\Http\Controllers\TicketController@addTicketMessage');
+Route::middleware('auth:sanctum')->post('/getTicketById','App\Http\Controllers\TicketController@getTicketById');
+Route::middleware('auth:sanctum')->get('/allActiveReservations','App\Http\Controllers\AdminController@allActiveReservations');
 
 Route::post('/raspberry','App\Http\Controllers\RaspberryController@raspberry');

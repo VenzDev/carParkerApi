@@ -14,52 +14,45 @@ class RaspberryController extends Controller
     {
         $rfid = $request['rfid'];
         $user = User::all()->where('rfid_card_id', $rfid)->first();
-    
-        if(!$user)
-        {
-            return response()->json(['status'=>'RFID not found']);
+
+        if (!$user) {
+            return response()->json(['status' => 'RFID not found']);
         }
-    
+
         $now = Carbon::now();
-    
+
         $active_reservation = Reservation::all()
         ->where('user_id', $user->id)
         ->where('status', 'RESERVED')
-        ->filter(function($item) use(&$now) {
-            if($now->between($item->system_reservation_from, $item->reservation_to))
-            {
+        ->filter(function ($item) use (&$now) {
+            if ($now->between($item->system_reservation_from, $item->reservation_to)) {
                 return $item;
             }
-          })
+        })
         ->first();
-    
-        if($active_reservation)
-        {
+
+        if ($active_reservation) {
             $active_reservation->status = 'CAR ON PARKING';
             $active_reservation->save();
             return response()->json(['status' => 'Reservation confirmed']);
         }
-    
+
         $end_reservation = Reservation::all()
         ->where('user_id', $user->id)
         ->where('status', 'CAR ON PARKING')
-        ->filter(function($item) use(&$now) {
-            if($now->between($item->system_reservation_from, $item->system_reservation_to))
-            {
+        ->filter(function ($item) use (&$now) {
+            if ($now->between($item->system_reservation_from, $item->system_reservation_to)) {
                 return $item;
             }
-          })
+        })
         ->first();
-    
-        if($end_reservation)
-        {
+
+        if ($end_reservation) {
             $end_reservation->status = 'ARCHIVED';
             $end_reservation->save();
             return response()->json(['status' => 'Reservation ended']);
         }
-    
+
         return response()->json(['status' => 'Reservation not found']);
-    
-    
     }
 }

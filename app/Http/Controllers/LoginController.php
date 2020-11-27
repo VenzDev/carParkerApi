@@ -8,22 +8,24 @@ use Illuminate\Validation\ValidationException as ValidationValidationException;
 
 class LoginController extends Controller
 {
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $request->validate([
-            'email'=>['required'],
-            'password'=>['required']
+            'email' => ['required'],
+            'password' => ['required']
         ]);
 
-        if(Auth::attempt($request->only('email','password'))){
-            return response()->json(Auth::user(),200);
+        if (Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(Auth::user(), 200);
         }
 
         throw ValidationValidationException::withMessages([
-            'email'=>['The provided credentials are incorrect']
+            'email' => ['The provided credentials are incorrect']
         ]);
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         Auth::logout();
     }
 }

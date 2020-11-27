@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
+    use Notifiable;
+
+    protected $appends = ['has_ticket'];
 
     /**
      * The attributes that are mass assignable.
@@ -41,5 +43,19 @@ class User extends Authenticatable
     public function reservations()
     {
         return $this->hasMany('App\Models\Reservation');
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany('App\Models\Ticket');
+    }
+
+    public function getHasTicketAttribute(){
+        $ticket = Ticket::query()->where('user_id', $this->attributes['id'])->where('is_finished',false)->first();
+
+        if($ticket){
+        return true;
+        }
+        return false;
     }
 }

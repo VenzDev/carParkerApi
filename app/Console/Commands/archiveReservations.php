@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class archiveReservations extends Command
+class ArchiveReservations extends Command
 {
     /**
      * The name and signature of the console command.
@@ -42,12 +42,11 @@ class archiveReservations extends Command
     {
         $output = new ConsoleOutput();
         $date = Carbon::now()->tz('Europe/Warsaw');
-        $reservations = Reservation::all()->where('status','=','RESERVED')->where('reservation_to','<',$date);
+        $reservations = Reservation::all()->where('status', '=', 'RESERVED')->where('reservation_to', '<', $date);
         $output->writeln("<info>------------------------------</info>");
         $output->writeln("<info>${date}</info>");
-        foreach($reservations as $reservation)
-        {
-            $reservation->status='ARCHIVED';
+        foreach ($reservations as $reservation) {
+            $reservation->status = 'ARCHIVED';
             $reservation->save();
         }
         return 0;
