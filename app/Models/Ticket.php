@@ -13,4 +13,19 @@ class Ticket extends Model
     {
         return $this->belongsTo('App\Models\User');
     }
+
+    public function messages()
+    {
+        return $this->hasMany('App\Models\Message');
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+        self::deleting(function($ticket){
+            $ticket->messages()->each(function($message){
+                $message->delete();
+            });
+        });
+    }
 }

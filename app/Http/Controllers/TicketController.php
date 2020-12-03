@@ -3,31 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Message;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
     public function createTicket(Request $request)
     {
-        $user_id = $request->user()->id;
+        $user_id = 1;
         $new_ticket = new Ticket();
-
-        $array = [['USER', $request['message']]];
         
         $new_ticket->title = $request['title'];
         $new_ticket->is_finished = false;
         $new_ticket->user_id = $user_id;
-        $new_ticket->messages = serialize($array);
-
         $new_ticket->save();
+
+        $message = new Message();
+        $message->user_id = $user_id;
+        $message->content = $request['content'];
+        $message->ticket_id = $new_ticket->id;
+        $message->save();
 
         return response()->json(['status' => 'success']);
     }
 
     public function getTickets()
     {
-        $all_tickets = Ticket::query()->where('is_finished',false)->get()->toArray();
+        $all_tickets = Ticket::query()->where('is_finished',false)->with('messages.user:id,name,role')->get()->toArray();
 
         return response()->json($all_tickets);
     }
@@ -35,51 +39,41 @@ class TicketController extends Controller
     public function getUserTicket(Request $request)
     {
         $user_id = $request->user()->id;
-        $ticket = Ticket::query()->where('user_id', $user_id)->first();
+        $ticket = Ticket::query()->where('is_finished',false)->where('user_id',$user_id)->with('messages.user:id,name,role')->get()->first();
 
-        if($ticket){
-            $ticket->messages = unserialize($ticket->messages);
-            return response()->json($ticket);
-        }
-        else return response()->json(null);
-
+        return response()->json($ticket);
     }
 
     public function getTicketById(Request $request)
     {
         $id = $request['id'];
-        $ticket = Ticket::query()->where('id', $id)->first();
+        $ticket = Ticket::query()->where('id', $id)->with('messages.user:id,name,role')->get()->first();
 
-        if($ticket){
-            $ticket->messages = unserialize($ticket->messages);
-            return response()->json($ticket);
-        }
-        else return response()->json(null);
+        return response()->json($ticket);
     }
 
     public function addTicketMessage(Request $request)
     {
+        $ticket_id = $request['ticket_id'];
         $user_id = $request->user()->id;
-        $user_role = $request->user()->role;
 
-        $ticket = Ticket::query()
-        ->where('user_id', $user_id)
-        ->where('is_finished', false)
-        ->first();
+        $message = new Message();
 
-        $messages = unserialize($ticket->messages);
+        $message->ticket_id = $ticket_id;
+        $message->user_id = $user_id;
+        $message->content = $request['content'];
+        $message->save();
 
-        if($user_role === 'ADMIN'){
-            array_push($messages, ['ADMIN', $request['message']]);
-        } else if($user_role === 'USER') {
-            array_push($messages, ['USER', $request['message']]);
-        }
-
-        $ticket->messages = serialize($messages);
-        $ticket->save();
-
-        $ticket->messages = unserialize($ticket->messages);
+        $ticket = Ticket::query()->where('id', $ticket_id)->with('messages.user:id,name,role')->first();
 
         return response()->json($ticket);
+    }
+
+    public function deleteTicket(Request $request)
+    {
+        $ticket_id = $request['ticket_id'];
+        Ticket::query()->where('id', $ticket_id)->first()->delete();
+
+        return response()->json(['status' => 'success']);
     }
 }
