@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->get('/getUserTicket','App\Http\Controllers\Ti
 Route::middleware('auth:sanctum')->post('/addTicketMessage','App\Http\Controllers\TicketController@addTicketMessage');
 Route::middleware('auth:sanctum')->post('/getTicketById','App\Http\Controllers\TicketController@getTicketById');
 Route::middleware('auth:sanctum')->post('/deleteTicket','App\Http\Controllers\TicketController@deleteTicket');
+Route::middleware('auth:sanctum')->post('/setTicketAsFinished','App\Http\Controllers\TicketController@setTicketAsFinished');
 Route::middleware('auth:sanctum')->get('/allActiveReservations','App\Http\Controllers\AdminController@allActiveReservations');
 
 Route::get('/test', function(){

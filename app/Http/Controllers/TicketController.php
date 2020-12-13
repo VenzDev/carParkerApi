@@ -76,4 +76,14 @@ class TicketController extends Controller
 
         return response()->json(['status' => 'success']);
     }
+
+    public function setTicketAsFinished(Request $request)
+    {
+        $ticket_id = $request['ticket_Id'];
+        $ticket =Ticket::query()->where('id', $ticket_id)->first();
+        $ticket->is_finished = true;
+        $ticket->save();
+
+        return response()->json(['status'=>'finished']);
+    }
 }
