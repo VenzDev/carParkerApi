@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException as ValidationValidationException;
 
 class LoginController extends Controller
@@ -26,6 +27,7 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
+        return response()->json(['status' => 'success']);
     }
 }

@@ -11,7 +11,7 @@ class AdminController extends Controller
     public function allActiveReservations(Request $request)
     {
         $all_reservations  = Reservation::query()
-        ->whereIn('status', ['RESERVED', 'CAR ON PARKING'])->simplePaginate(10);
+        ->whereIn('status', ['RESERVED', 'CAR ON PARKING'])->with('user:name,id')->simplePaginate(10);
 
         return response()->json($all_reservations);
     }
@@ -21,6 +21,15 @@ class AdminController extends Controller
         $all_users  = User::all()->simplePaginate(10);
 
         return response()->json($all_users);
+    }
+
+    public function deleteReservation(Request $request)
+    {
+        $reservation_id = $request['reservation_id'];
+
+        Reservation::query()->where('id', $reservation_id)->delete();
+
+        return response()->json(['status'=> 'success']);
     }
 
 }

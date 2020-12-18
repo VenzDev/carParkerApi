@@ -14,7 +14,7 @@ class TicketController extends Controller
     {
         $user_id = 1;
         $new_ticket = new Ticket();
-        
+
         $new_ticket->title = $request['title'];
         $new_ticket->is_finished = false;
         $new_ticket->user_id = $user_id;
@@ -31,7 +31,7 @@ class TicketController extends Controller
 
     public function getTickets()
     {
-        $all_tickets = Ticket::query()->where('is_finished',false)->with('messages.user:id,name,role')->get()->toArray();
+        $all_tickets = Ticket::query()->where('is_finished', false)->with('messages.user:id,name,role')->get()->toArray();
 
         return response()->json($all_tickets);
     }
@@ -39,7 +39,7 @@ class TicketController extends Controller
     public function getUserTicket(Request $request)
     {
         $user_id = $request->user()->id;
-        $ticket = Ticket::query()->where('is_finished',false)->where('user_id',$user_id)->with('messages.user:id,name,role')->get()->first();
+        $ticket = Ticket::query()->where('is_finished', false)->where('user_id', $user_id)->with('messages.user:id,name,role')->get()->first();
 
         return response()->json($ticket);
     }
@@ -79,11 +79,11 @@ class TicketController extends Controller
 
     public function setTicketAsFinished(Request $request)
     {
-        $ticket_id = $request['ticket_Id'];
-        $ticket =Ticket::query()->where('id', $ticket_id)->first();
+        $ticket_id = $request['ticket_id'];
+        $ticket = Ticket::query()->where('id', $ticket_id)->first();
         $ticket->is_finished = true;
         $ticket->save();
 
-        return response()->json(['status'=>'finished']);
+        return response()->json(['status' => 'finished']);
     }
 }
