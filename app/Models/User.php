@@ -58,4 +58,17 @@ class User extends Authenticatable
         }
         return false;
     }
+
+    public static function boot()
+    {
+        parent::boot();
+        self::deleting(function($user){
+            $user->tickets()->each(function($ticket){
+                $ticket->delete();
+            });
+            $user->reservations()->each(function($reservation){
+                $reservation->delete();
+            });
+        });
+    }
 }

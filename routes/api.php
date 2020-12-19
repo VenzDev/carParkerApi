@@ -50,5 +50,8 @@ Route::middleware('auth:sanctum')->post('/setTicketAsFinished', 'App\Http\Contro
 Route::middleware('auth:sanctum')->get('/allActiveReservations', 'App\Http\Controllers\AdminController@allActiveReservations');
 Route::middleware('auth:sanctum')->get('/adminCarsOnParking', 'App\Http\Controllers\CheckParkingController@adminCarsOnParking');
 Route::middleware('auth:sanctum')->post('/deleteReservation', 'App\Http\Controllers\AdminController@deleteReservation');
+Route::middleware('auth:sanctum')->get('/allUsers', 'App\Http\Controllers\AdminController@allUsers');
+Route::middleware('auth:sanctum')->post('/deleteUser', 'App\Http\Controllers\AdminController@deleteUser');
+Route::middleware('auth:sanctum')->post('/editUser', 'App\Http\Controllers\AdminController@editUser');
 
 Route::post('/raspberry', 'App\Http\Controllers\RaspberryController@raspberry');
