@@ -6,13 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Message;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
     public function createTicket(Request $request)
     {
-        $user_id = 1;
+        $user_id = $request->user()->id;
         $new_ticket = new Ticket();
 
         $new_ticket->title = $request['title'];

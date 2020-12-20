@@ -53,5 +53,6 @@ Route::middleware('auth:sanctum')->post('/deleteReservation', 'App\Http\Controll
 Route::middleware('auth:sanctum')->get('/allUsers', 'App\Http\Controllers\AdminController@allUsers');
 Route::middleware('auth:sanctum')->post('/deleteUser', 'App\Http\Controllers\AdminController@deleteUser');
 Route::middleware('auth:sanctum')->post('/editUser', 'App\Http\Controllers\AdminController@editUser');
+Route::middleware('auth:sanctum')->post('/verifyAccount', 'App\Http\Controllers\UserController@verifyAccount');
 
 Route::post('/raspberry', 'App\Http\Controllers\RaspberryController@raspberry');

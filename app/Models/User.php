@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -51,7 +52,9 @@ class User extends Authenticatable
     }
 
     public function getHasTicketAttribute(){
-        $ticket = Ticket::query()->where('user_id', $this->attributes['id'])->where('is_finished',false)->first();
+        $ticket = Ticket::query()->where('user_id', $this->attributes['id'])->where('is_finished', 0)->first();
+
+        Log::info($this->attributes['id']);
 
         if($ticket){
         return true;
