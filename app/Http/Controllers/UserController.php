@@ -55,9 +55,14 @@ class UserController extends Controller
         $code = $request['code'];
         $user_id = $request->user()->id;
 
-        $user = User::query()->where('id', $user_id)->first();
-        $user->is_active = true;
-        $user->save();
+        if($code === '1234')
+        {
+            $user = User::query()->where('id', $user_id)->first();
+            $user->is_active = true;
+            $user->save();
+        } else {
+            return response()->setStatusCode(400,'problem with activation');
+        }
 
         return response()->json(['status' => 'success']);
 
