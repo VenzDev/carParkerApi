@@ -12,7 +12,7 @@ class AdminController extends Controller
     public function allActiveReservations(Request $request)
     {
         $all_reservations  = Reservation::query()
-        ->whereIn('status', ['RESERVED', 'CAR ON PARKING'])->with('user:name,id')->simplePaginate(10);
+        ->whereIn('status', ['RESERVED', 'CAR ON PARKING'])->with('user:name,id')->simplePaginate(20);
 
         return response()->json($all_reservations);
     }

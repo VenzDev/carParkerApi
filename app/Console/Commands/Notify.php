@@ -54,9 +54,6 @@ class Notify extends Command
             }
         });
 
-        Log::info("rezerwacje");
-        Log::info($reservations);
-
         foreach ($reservations as $reservation) {
 
             $reservation->notify_sent = true;
@@ -64,7 +61,9 @@ class Notify extends Command
 
             $details = [
                 'title' => 'Your parking slot is waiting for you.',
-                'body' => "Reservation from $reservation->reservation_from to $reservation->reservation_to, parking slot: $reservation->parking_slot_id"
+                'body' => "Reservation from 
+                $reservation->reservation_from to $reservation->reservation_to, 
+                parking slot: $reservation->parking_slot_id"
             ];
 
             $user = User::all()->where('id',$reservation->user_id)->first();

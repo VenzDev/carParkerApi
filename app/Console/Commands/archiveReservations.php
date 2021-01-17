@@ -14,7 +14,7 @@ class ArchiveReservations extends Command
      *
      * @var string
      */
-    protected $signature = 'minute:update';
+    protected $signature = 'archive:update';
 
     /**
      * The console command description.
@@ -40,11 +40,8 @@ class ArchiveReservations extends Command
      */
     public function handle()
     {
-        $output = new ConsoleOutput();
         $date = Carbon::now()->tz('Europe/Warsaw');
         $reservations = Reservation::all()->where('status', '=', 'RESERVED')->where('reservation_to', '<', $date);
-        $output->writeln("<info>------------------------------</info>");
-        $output->writeln("<info>${date}</info>");
         foreach ($reservations as $reservation) {
             $reservation->status = 'ARCHIVED';
             $reservation->save();

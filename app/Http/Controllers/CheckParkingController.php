@@ -191,7 +191,7 @@ class CheckParkingController extends Controller
         return $count;
     }
 
-    private function generalCheckByParkingId(string $from, string $to, int $parking_id)
+    public static function generalCheckByParkingId(string $from, string $to, int $parking_id)
     {
         $reservations_between = Reservation::all()
             ->where('status', 'RESERVED')
