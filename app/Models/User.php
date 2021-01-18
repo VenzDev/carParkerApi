@@ -29,7 +29,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'remember_token',
     ];
 
     /**
@@ -51,13 +51,14 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\Ticket');
     }
 
-    public function getHasTicketAttribute(){
+    public function getHasTicketAttribute()
+    {
         $ticket = Ticket::query()->where('user_id', $this->attributes['id'])->where('is_finished', 0)->first();
 
         Log::info($this->attributes['id']);
 
-        if($ticket){
-        return true;
+        if ($ticket) {
+            return true;
         }
         return false;
     }
@@ -65,11 +66,11 @@ class User extends Authenticatable
     public static function boot()
     {
         parent::boot();
-        self::deleting(function($user){
-            $user->tickets()->each(function($ticket){
+        self::deleting(function ($user) {
+            $user->tickets()->each(function ($ticket) {
                 $ticket->delete();
             });
-            $user->reservations()->each(function($reservation){
+            $user->reservations()->each(function ($reservation) {
                 $reservation->delete();
             });
         });

@@ -30,7 +30,7 @@ class AdminController extends Controller
 
         Reservation::query()->where('id', $reservation_id)->delete();
 
-        return response()->json(['status'=> 'success']);
+        return response()->json(['status' => 'success']);
     }
 
     public function deleteUser(Request $request)
@@ -55,5 +55,4 @@ class AdminController extends Controller
 
         return response()->json(['status' => 'success']);
     }
-
 }

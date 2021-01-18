@@ -22,8 +22,8 @@ class Ticket extends Model
     public static function boot()
     {
         parent::boot();
-        self::deleting(function($ticket){
-            $ticket->messages()->each(function($message){
+        self::deleting(function ($ticket) {
+            $ticket->messages()->each(function ($message) {
                 $message->delete();
             });
         });

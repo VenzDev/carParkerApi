@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\ArchivedReservation;
 use App\Models\Reservation;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -43,8 +44,7 @@ class ArchiveReservations extends Command
         $date = Carbon::now()->tz('Europe/Warsaw');
         $reservations = Reservation::all()->where('status', '=', 'RESERVED')->where('reservation_to', '<', $date);
         foreach ($reservations as $reservation) {
-            $reservation->status = 'ARCHIVED';
-            $reservation->save();
+            ArchivedReservation::archiveReservation($reservation);
         }
         return 0;
     }

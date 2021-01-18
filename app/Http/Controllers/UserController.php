@@ -47,7 +47,7 @@ class UserController extends Controller
             $user->save();
             return response()->json(['status' => 'success']);
         }
-        return response()->setStatusCode(400,'problem with activation');
+        return response()->setStatusCode(400, 'problem with activation');
     }
 
     public function verifyAccount(Request $request)
@@ -55,16 +55,14 @@ class UserController extends Controller
         $code = $request['code'];
         $user_id = $request->user()->id;
 
-        if($code === '1234')
-        {
+        if ($code === '1234') {
             $user = User::query()->where('id', $user_id)->first();
             $user->is_active = true;
             $user->save();
         } else {
-            return response()->setStatusCode(400,'problem with activation');
+            return response()->setStatusCode(400, 'problem with activation');
         }
 
         return response()->json(['status' => 'success']);
-
     }
 }

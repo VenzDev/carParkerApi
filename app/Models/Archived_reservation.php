@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Archived_reservation extends Model
+class ArchivedReservation extends Model
 {
     use HasFactory;
 
@@ -81,5 +81,19 @@ class Archived_reservation extends Model
             return false;
         }
         return true;
+    }
+
+    public static function archiveReservation(Reservation &$reservation)
+    {
+        $archive_reservation = new ArchivedReservation();
+        $archive_reservation->reservation_from = $reservation->reservation_from;
+        $archive_reservation->reservation_to = $reservation->reservation_to;
+        $archive_reservation->system_reservation_from = $reservation->system_reservation_from;
+        $archive_reservation->system_reservation_to = $reservation->system_reservation_to;
+        $archive_reservation->parking_slot_id = $reservation->parking_slot_id;
+        $archive_reservation->status = $reservation->status;
+
+        $archive_reservation->save();
+        $reservation->delete();
     }
 }

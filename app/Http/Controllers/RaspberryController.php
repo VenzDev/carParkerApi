@@ -38,10 +38,15 @@ class RaspberryController extends Controller
             ->where('parking_slot_id', $active_reservation->parking_slot_id)
             ->where('status', 'CAR ON PARKING')->first();
 
-            if($car_on_parking_reservation){
-                for ($i=1; $i < 24; $i++) { 
-                    if(count(CheckParkingController::generalCheckByParkingId(
-                        $active_reservation->reservation_from, $active_reservation->reservation_to, $i)) === 0){
+            if ($car_on_parking_reservation) {
+                for ($i = 1; $i < 24; $i++) {
+                    if (
+                        count(CheckParkingController::generalCheckByParkingId(
+                            $active_reservation->reservation_from,
+                            $active_reservation->reservation_to,
+                            $i
+                        )) === 0
+                    ) {
                             $active_reservation->parking_slot_id = $i;
                             $active_reservation->status = 'CAR ON PARKING';
                             $active_reservation->save();
@@ -58,7 +63,7 @@ class RaspberryController extends Controller
 
                             return response()->json(['status' => 'Reservation confirmed']);
                             break;
-                        }
+                    }
                 }
 
                 $details = [
@@ -73,7 +78,6 @@ class RaspberryController extends Controller
                 $active_reservation->status = 'CAR ON PARKING';
                 $active_reservation->save();
                 return response()->json(['status' => 'Reservation confirmed']);
-                
             } else {
                 $active_reservation->status = 'CAR ON PARKING';
                 $active_reservation->save();

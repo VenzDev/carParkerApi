@@ -314,7 +314,6 @@ class CheckParkingController extends Controller
     {
         $array = [];
         for ($i = 0; $i < 23; $i++) {
-
             if (Reservation::query()->where('status', 'CAR ON PARKING')->where('parking_slot_id', $i + 1)->get()->count() === 1) {
                 $array[$i] = 'BUSY';
             } else {

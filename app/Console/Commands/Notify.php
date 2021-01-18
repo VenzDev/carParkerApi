@@ -55,7 +55,6 @@ class Notify extends Command
         });
 
         foreach ($reservations as $reservation) {
-
             $reservation->notify_sent = true;
             $reservation->save();
 
@@ -66,10 +65,9 @@ class Notify extends Command
                 parking slot: $reservation->parking_slot_id"
             ];
 
-            $user = User::all()->where('id',$reservation->user_id)->first();
+            $user = User::all()->where('id', $reservation->user_id)->first();
         
             Mail::to($user->email)->send(new NotificationMail('Reservation - Parker', $details));
-    
         }
 
         return 0;

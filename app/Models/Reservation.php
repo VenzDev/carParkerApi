@@ -30,7 +30,7 @@ class Reservation extends Model
         $system_from = Carbon::parse($this->attributes['system_reservation_from']);
         $diff = $system_from->diffInSeconds($today);
 
-        if($today >= $system_from){
+        if ($today >= $system_from) {
             return 0;
         }
 
@@ -45,7 +45,7 @@ class Reservation extends Model
 
         $diff = $system_to->diffInSeconds($today);
 
-        if($today >= $system_to){
+        if ($today >= $system_to) {
             return 0;
         }
 
@@ -60,7 +60,7 @@ class Reservation extends Model
 
         $diff = $system_to->diffInSeconds($today);
 
-        if($today >= $system_to){
+        if ($today >= $system_to) {
             return 0;
         }
 
