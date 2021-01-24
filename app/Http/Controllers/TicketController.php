@@ -3,34 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Message;
-use App\Models\Ticket;
+use App\Repository\MessageRepository;
+use App\Repository\TicketRepository;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
+    private $ticketRepository;
+    private $messageRepository;
+
+    public function __construct(TicketRepository $ticketRepository, MessageRepository $messageRepository)
+    {
+        $this->ticketRepository = $ticketRepository;
+        $this->messageRepository = $messageRepository;
+    }
+
     public function createTicket(Request $request)
     {
         $user_id = $request->user()->id;
-        $new_ticket = new Ticket();
-
-        $new_ticket->title = $request['title'];
-        $new_ticket->is_finished = false;
-        $new_ticket->user_id = $user_id;
-        $new_ticket->save();
-
-        $message = new Message();
-        $message->user_id = $user_id;
-        $message->content = $request['content'];
-        $message->ticket_id = $new_ticket->id;
-        $message->save();
+        
+        $this->ticketRepository->create($user_id, $request->title, $request->content);
 
         return response()->json(['status' => 'success']);
     }
 
     public function getTickets()
     {
-        $all_tickets = Ticket::query()->where('is_finished', false)->with('messages.user:id,name,role')->get()->toArray();
+        $all_tickets = $this->ticketRepository->getAll()->toArray();
 
         return response()->json($all_tickets);
     }
@@ -38,48 +37,47 @@ class TicketController extends Controller
     public function getUserTicket(Request $request)
     {
         $user_id = $request->user()->id;
-        $ticket = Ticket::query()->where('is_finished', false)->where('user_id', $user_id)->with('messages.user:id,name,role')->get()->first();
+        $ticket = $this->ticketRepository->getByUserId($user_id);
 
         return response()->json($ticket);
     }
 
     public function getTicketById(Request $request)
     {
-        $id = $request['id'];
-        $ticket = Ticket::query()->where('id', $id)->with('messages.user:id,name,role')->get()->first();
+        $id = $request->id;
+        $ticket = $this->ticketRepository->getById($id);
 
         return response()->json($ticket);
     }
 
     public function addTicketMessage(Request $request)
     {
-        $ticket_id = $request['ticket_id'];
+        $ticket_id = $request->ticket_id;
         $user_id = $request->user()->id;
 
-        $message = new Message();
+        $this->messageRepository->create($ticket_id, $user_id, $request->content);
 
-        $message->ticket_id = $ticket_id;
-        $message->user_id = $user_id;
-        $message->content = $request['content'];
-        $message->save();
-
-        $ticket = Ticket::query()->where('id', $ticket_id)->with('messages.user:id,name,role')->first();
+        $ticket = $this->ticketRepository->getById($ticket_id);
 
         return response()->json($ticket);
     }
 
     public function deleteTicket(Request $request)
     {
-        $ticket_id = $request['ticket_id'];
-        Ticket::query()->where('id', $ticket_id)->first()->delete();
+        $ticket_id = $request->ticket_id;
+        $this->ticketRepository->delete($ticket_id);
 
         return response()->json(['status' => 'success']);
     }
 
     public function setTicketAsFinished(Request $request)
     {
-        $ticket_id = $request['ticket_id'];
-        $ticket = Ticket::query()->where('id', $ticket_id)->first();
+        $ticket_id = $request->ticket_id;
+        $ticket = $this->ticketRepository->getById($ticket_id);
+        if (!$ticket) {
+            abort(422, 'Ticket not found');
+        }
+
         $ticket->is_finished = true;
         $ticket->save();
 

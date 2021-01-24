@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Repository\UserRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function register(Request $request)
     {
         $request->validate([
@@ -16,12 +22,6 @@ class RegisterController extends Controller
             'password' => ['required','min:8','confirmed']
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'USER',
-            'isActive' => false
-        ]);
+        $this->userRepository->create($request->name, $request->email, $request->password);
     }
 }

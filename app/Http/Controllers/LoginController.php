@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException as ValidationValidationException;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -20,7 +19,7 @@ class LoginController extends Controller
             return response()->json(Auth::user(), 200);
         }
 
-        throw ValidationValidationException::withMessages([
+        throw ValidationException::withMessages([
             'email' => ['The provided credentials are incorrect']
         ]);
     }

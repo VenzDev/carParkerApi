@@ -2,57 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reservation;
-use App\Models\User;
+use App\Repository\ReservationRepository;
+use App\Repository\UserRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-
 class AdminController extends Controller
 {
-    public function allActiveReservations(Request $request)
+
+    private UserRepository $userRepository;
+    private ReservationRepository $reservationRepository;
+
+    public function __construct(UserRepository $userRepository, ReservationRepository $reservationRepository)
     {
-        $all_reservations  = Reservation::query()
-        ->whereIn('status', ['RESERVED', 'CAR ON PARKING'])->with('user:name,id')->simplePaginate(20);
+        $this->userRepository = $userRepository;
+        $this->reservationRepository = $reservationRepository;
+
+    }
+
+    public function allActiveReservations()
+    {
+        $all_reservations  = $this->reservationRepository->activeReservations('user:name,id', 20);
 
         return response()->json($all_reservations);
     }
 
-    public function allUsers(Request $request)
+    public function allUsers()
     {
-        $all_users  = User::all()->toArray();
+        $all_users  = $this->userRepository->all()->toArray();
 
         return response()->json($all_users);
     }
 
     public function deleteReservation(Request $request)
     {
-        $reservation_id = $request['reservation_id'];
+        $reservation_id = $request->reservation_id;
+        
+        $this->reservationRepository->delete($reservation_id);
 
-        Reservation::query()->where('id', $reservation_id)->delete();
-
-        return response()->json(['status' => 'success']);
+        return response()->json($this->status('reservation deleted!'));
     }
 
     public function deleteUser(Request $request)
     {
-        $user_id = $request['user_id'];
+        $user_id = $request->user_id;
 
-        User::query()->where('id', $user_id)->first()->delete();
+        $this->userRepository->deleteOnlyNormalUser($user_id);
 
-        return response()->json(['status' => 'success']);
+        return response()->json($this->status('user deleted!'));
     }
 
     public function editUser(Request $request)
     {
-        $finded_user = User::query()->where('id', $request->id)->first();
+        $this->userRepository->findAndEdit($request);
 
-        $finded_user->name = $request->name;
-        $finded_user->email = $request->email;
-        $finded_user->rfid_card_id = $request->rfid_card_id;
-        $finded_user->is_active = $request->is_active;
+        return response()->json($this->status('user edited!'));
+    }
 
-        $finded_user->save();
-
-        return response()->json(['status' => 'success']);
+    private function status($message)
+    {
+        return ['status' => $message];
     }
 }

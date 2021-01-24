@@ -58,4 +58,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::Post('/verifyAccount', 'App\Http\Controllers\UserController@verifyAccount');
     Route::post('/createTicket', 'App\Http\Controllers\TicketController@createTicket');
     Route::get('/getTickets', 'App\Http\Controllers\TicketController@getTickets');
-})
+});

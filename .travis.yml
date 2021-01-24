@@ -10,9 +10,12 @@ services:
   - mysql
 
 before_script:
-  - composer install
   - cp .env.example .env
+  - sudo mysql -e 'create database parker_test;'
+  - composer self-update
+  - composer install --prefer-source --no-interaction --dev
   - php artisan key:generate
+  - php artisan migrate
 
 script:
   - vendor/bin/phpunit

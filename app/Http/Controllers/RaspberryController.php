@@ -6,16 +6,29 @@ use App\Http\Controllers\Controller;
 use App\Mail\NotificationMail;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Repository\ReservationRepository;
+use App\Repository\UserRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class RaspberryController extends Controller
 {
+
+    private UserRepository $userRepository;
+    private ReservationRepository $reservationRepository;
+
+    public function __construct(UserRepository $userRepository, ReservationRepository $reservationRepository)
+    {   
+        $this->userRepository = $userRepository;
+        $this->reservationRepository = $reservationRepository;
+        
+    }
+
     public function raspberry(Request $request)
     {
-        $rfid = $request['rfid'];
-        $user = User::all()->where('rfid_card_id', $rfid)->first();
+        $rfid = $request->rfid;
+        $user = $this->userRepository->findByRfid($rfid);
 
         if (!$user) {
             return response()->json(['status' => 'RFID not found']);
@@ -23,21 +36,12 @@ class RaspberryController extends Controller
 
         $now = Carbon::now();
 
-        $active_reservation = Reservation::all()
-        ->where('user_id', $user->id)
-        ->where('status', 'RESERVED')
-        ->filter(function ($item) use (&$now) {
-            if ($now->between($item->system_reservation_from, $item->reservation_to)) {
-                return $item;
-            }
-        })
-        ->first();
+        $active_reservation = $this->reservationRepository->activeUserReservationBetweenTime($user->id, $now);
 
         if ($active_reservation) {
-            $car_on_parking_reservation = Reservation::all()
-            ->where('parking_slot_id', $active_reservation->parking_slot_id)
-            ->where('status', 'CAR ON PARKING')->first();
+            $car_on_parking_reservation = $this->reservationRepository->carOnParkingReservation($active_reservation->parking_slot_id);
 
+            //Trying to rebook reservation when there is car on parking slot on another parking slot
             if ($car_on_parking_reservation) {
                 for ($i = 1; $i < 24; $i++) {
                     if (
