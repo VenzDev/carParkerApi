@@ -12,10 +12,13 @@ before_script:
   - cp .env.example .env
   - sudo mysql -e 'create database parker_test;'
   - composer self-update
+  - composer require squizlabs/php_codesniffer:dev-master
   - composer install --prefer-source --no-interaction --dev
+  - composer require --dev squizlabs/php_codesniffer
   - php artisan key:generate
   - php artisan migrate --database=mysql_testing
 
 script:
   - vendor/bin/phpunit
+  - vendor/bin/phpcs
   - phpcs
