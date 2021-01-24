@@ -56,7 +56,6 @@ class RaspberryController extends Controller
 
                             $system_time_to_change = Carbon::parse($car_on_parking_reservation->system_reservation_to);
                             $time_to_change = Carbon::parse($car_on_parking_reservation->reservation_to);
-                            
                             $time_to_change->addMinutes(10);
                             $system_time_to_change->addMinutes(10);
                             $car_on_parking_reservation->system_reservation_to = $system_time_to_change;
@@ -75,7 +74,6 @@ class RaspberryController extends Controller
                 ];
 
                 $admin = User::all()->where('role', 'ADMIN')->first();
-        
                 Mail::to($admin->email)->send(new NotificationMail('Issue - Parker', $details));
 
                 $active_reservation->status = 'CAR ON PARKING';

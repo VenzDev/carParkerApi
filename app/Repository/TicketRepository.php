@@ -52,7 +52,6 @@ class TicketRepository implements TicketRepositoryInterface
         $message->ticket_id = $new_ticket->id;
         $message->user_id = $user_id;
         $message->content = $content;
-        
         $message->save();
     }
 }

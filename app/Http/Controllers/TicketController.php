@@ -21,7 +21,6 @@ class TicketController extends Controller
     public function createTicket(Request $request)
     {
         $user_id = $request->user()->id;
-        
         $this->ticketRepository->create($user_id, $request->title, $request->content);
 
         return response()->json(['status' => 'success']);

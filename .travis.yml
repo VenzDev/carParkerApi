@@ -21,4 +21,3 @@ before_script:
 script:
   - vendor/bin/phpunit
   - vendor/bin/phpcs
-  - phpcs

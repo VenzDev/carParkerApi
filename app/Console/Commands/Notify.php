@@ -44,7 +44,6 @@ class Notify extends Command
     public function handle()
     {
         $date = Carbon::now()->tz('Europe/Warsaw');
-        
         $reservations = Reservation::all()
         ->where('status', 'RESERVED')
         ->where('notify_sent', false)
@@ -66,7 +65,6 @@ class Notify extends Command
             ];
 
             $user = User::all()->where('id', $reservation->user_id)->first();
-        
             Mail::to($user->email)->send(new NotificationMail('Reservation - Parker', $details));
         }
 

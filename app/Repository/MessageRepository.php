@@ -12,8 +12,7 @@ class MessageRepository implements MessageRepositoryInterface
 
         $message->ticket_id = $ticket_id;
         $message->user_id = $user_id;
-        $message->content = $content;
-        
+        $message->content = $content;   
         $message->save();
     }
 }
