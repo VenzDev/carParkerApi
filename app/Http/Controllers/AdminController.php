@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repository\ReservationRepository;
 use App\Repository\UserRepository;
 use Illuminate\Http\Request;
+
 class AdminController extends Controller
 {
 
@@ -15,7 +16,6 @@ class AdminController extends Controller
     {
         $this->userRepository = $userRepository;
         $this->reservationRepository = $reservationRepository;
-
     }
 
     public function allActiveReservations()

@@ -15,4 +15,3 @@ interface UserRepositoryInterface
     public function findAndEdit(Request $request);
     public function deleteOnlyNormalUser(int $id);
 }
-

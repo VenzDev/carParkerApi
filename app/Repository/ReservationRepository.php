@@ -18,11 +18,11 @@ class ReservationRepository implements ReservationRepositoryInterface
         $query = Reservation::query()
         ->whereIn('status', ['RESERVED', 'CAR ON PARKING']);
 
-        if($with){
+        if ($with) {
             $query = $query->with($with);
         }
 
-        if($pagination){
+        if ($pagination) {
             $query = $query->simplePaginate($pagination);
         }
 

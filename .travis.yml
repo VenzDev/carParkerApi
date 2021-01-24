@@ -1,7 +1,6 @@
 language: php
 
 php:
-  - 7.3
   - 7.4
 
 os: linux
@@ -15,7 +14,8 @@ before_script:
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
   - php artisan key:generate
-  - php artisan migrate --database=parker_test
+  - php artisan migrate --database=mysql_testing
 
 script:
   - vendor/bin/phpunit
+  - phpcs

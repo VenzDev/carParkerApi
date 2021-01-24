@@ -19,10 +19,9 @@ class RaspberryController extends Controller
     private ReservationRepository $reservationRepository;
 
     public function __construct(UserRepository $userRepository, ReservationRepository $reservationRepository)
-    {   
+    {
         $this->userRepository = $userRepository;
         $this->reservationRepository = $reservationRepository;
-        
     }
 
     public function raspberry(Request $request)
