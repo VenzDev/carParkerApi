@@ -14,4 +14,5 @@ interface UserRepositoryInterface
     public function findWithActiveReservations(int $id): Collection;
     public function findAndEdit(Request $request);
     public function deleteOnlyNormalUser(int $id);
+    public function activeUser(int $user_id);
 }

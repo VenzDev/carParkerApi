@@ -21,13 +21,13 @@ class UserRepository implements UserRepositoryInterface
 
     public function findWithActiveReservations(int $id): Collection
     {
-        return User::with(['reservations' => function ($query){
+        return User::with(['reservations' => function ($query) {
             $query->whereIn('status', ['RESERVED', 'CAR ON PARKING']);
         }])->where('id', $id)->get()->first();
     }
 
     public function create(string $name, string $email, string $password)
-    {   
+    {
         User::create([
             'name' => $name,
             'email' => $email,
@@ -57,5 +57,12 @@ class UserRepository implements UserRepositoryInterface
     public function deleteOnlyNormalUser(int $id)
     {
         User::where('id', $id)->where('role', 'USER')->first()->delete();
+    }
+
+    public function activeUser(int $user_id)
+    {
+        $user = $this->findById($user_id);
+        $user->is_active = true;
+        $user->save();
     }
 }

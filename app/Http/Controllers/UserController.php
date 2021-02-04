@@ -46,12 +46,10 @@ class UserController extends Controller
     {
         $rfid_card_id = $request->user()->rfid_card_id;
         $user_id = $request->user()->id;
-        $rfid = $request['rfid'];
+        $rfid = $request->rfid;
 
         if ($rfid_card_id === $rfid) {
-            $user = $this->userRepository->findById($user_id);
-            $user->isActive = true;
-            $user->save();
+            $this->userRepository->activeUser($user_id);
             return response()->json(['status' => 'success']);
         }
 
@@ -60,13 +58,11 @@ class UserController extends Controller
 
     public function verifyAccount(Request $request)
     {
-        $code = $request['code'];
+        $code = $request->code;
         $user_id = $request->user()->id;
 
         if ($code === '1234') {
-            $user = $this->userRepository->findById($user_id);
-            $user->is_active = true;
-            $user->save();
+            $this->userRepository->activeUser($user_id);
         } else {
             return response()->setStatusCode(400, 'problem with activation');
         }
